@@ -1,0 +1,51 @@
+---
+title: "Simons Gorilla Example"
+output: html_notebook
+---
+
+Producing a graph using the table from http://journals.sagepub.com/doi/abs/10.1068/p281059
+
+```{r}
+visibility <- c("Transparent", "Opaque")
+event <- c("Umbrella", "Gorilla")
+attended_team <- c("White", "Black")
+task_difficulty <- c("Easy", "Hard")
+
+conditions <- expand.grid(visibility = visibility, event = event, attended_team = attended_team, task_difficulty = task_difficulty)
+
+percent_identifying <- c(
+  58, 100, 8, 42,
+  92, 58, 67, 83,
+  33, 83, 8, 50,
+  42, 58, 25, 58
+)
+
+dta <- cbind(conditions, percent_identifying)
+
+```
+
+Now to tidyverse this 
+
+```{r}
+require(tidyverse)
+dta %>% as_tibble -> dta
+dta
+
+dta %>% 
+  mutate(visibility = factor(visibility, levels = c("Opaque", "Transparent"))) %>% 
+  ggplot(aes(x = task_difficulty, y = percent_identifying, group = visibility, shape = visibility, linetype = visibility)) +
+  geom_point() + 
+  geom_line() + 
+  facet_grid(event ~ attended_team) + 
+  coord_cartesian(ylim = c(0, 100)) + 
+  labs(
+    x = "Task difficulty (Easy: bounce pass; hard: aerial pass)",
+    y = "Percent identifying unusual event",
+    linetype = "Visibility", shape = "Visibility"
+    )
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
