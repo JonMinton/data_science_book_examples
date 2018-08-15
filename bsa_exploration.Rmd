@@ -1,0 +1,348 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Exploring the BSA 2016
+
+```{r}
+require(tidyverse)
+
+
+dta <- haven::read_stata(file = "data/raw/bsa/8252STATA11_F9C6F18BDC32DE5D7553F4E87D11238E/UKDA-8252-stata11/stata11/bsa16_to_ukda.dta")
+```
+
+Need to make sense of the labels 
+
+```{r}
+col_classes <- sapply(dta, class)
+
+dta_fctr <- dta
+
+dta_fctr[,col_classes == "labelled"] <- as_factor(dta_fctr[,col_classes == "labelled"])
+
+dta_fctr
+
+```
+
+
+Pos. = 141	Variable = SupParty	Variable label = Generally speaking, do you think of yourself as a supporter of any one political party?
+
+Pos. = 142	Variable = ClosePty	Variable label = Do you think of yourself as a little closer to one political party than to the others?
+
+Pos. = 143	Variable = PartyIDN	Variable label = Rs political party identification(party support/closest to/likely vote at next election)?
+
+Pos. = 144	Variable = Partyid1	Variable label = R s political party identification dv
+
+
+Below's a list of all variables where 1 or 2 means 'agree'. 
+
+Pos. = 149	Variable = Idstrng	Variable label = Would you call yourself very strong supported party, fairly strong, or not very strong?
+
+Pos. = 150	Variable = Politics	Variable label = How much interest do you have in politics?
+
+Pos. = 152	Variable = VoteOnly	Variable label = Voting is the only way people like me can have any say about how the government runs things?
+
+Pos. = 153	Variable = GovTrust	Variable label = British governments of any party to place the needs of the nation above the interests of their own political party
+
+Pos. = 154	Variable = MPsTrust	Variable label = And how much do you trust politicians of any party in Britain to tell the truth when they are in a tight corner?
+
+Pos. = 165	Variable = MigWBen	Variable label = How long should migrants from within EU have lived in Britain before they can receive the same welfare benefits?
+
+Pos. = 166	Variable = WkMent	Variable label = Is paid work generally good or bad for mental health?
+
+Pos. = 167	Variable = WkPhys	Variable label = Is paid work generally good or bad for physical health?
+
+Pos. = 182	Variable = TLoopVw	Variable label = View if someone used a loophole to reduce the amount of tax they pay, without breaking the law.
+
+Pos. = 183	Variable = GmAware	Variable label = Aware sometimes benefit claimants find loopholes to increase their benefit payments, without breaking the law?
+
+Pos. = 185	Variable = GameBen	Variable label = View if someone used a loophole to increase their benefit payments, without breaking the law.
+
+Pos. = 191	Variable = NHSSat	Variable label = How satisfied or dissatisfied are you with the way the National Health Service runs nowadays?
+
+Pos. = 217	Variable = CareSat3	Variable label = How satisfied or dissatisfied are you with social care provided by local authorities: Version C
+
+
+Pos. = 218	Variable = NHSFProb	Variable label = Is the NHS facing a funding problem?: Version C
+
+Pos. = 223	Variable = HomsBult	Variable label = Would you support or oppose more homes being built in your local area?
+
+Pos. = 224	Variable = HomsAfbu	Variable label = Would you support or oppose more homes being built in your local area, if they were affordable?
+
+Pos. = 233	Variable = RentCost	Variable label = Financial assistance to people on low incomes, so that they are able to afford the costs of renting a home
+
+Pos. = 235	Variable = GCSEFur	Variable label = How well GCSEs/Standard Grades effectively prepare young people for further study
+
+Pos. = 236	Variable = GCSEWrk	Variable label = How well GCSEs/Standard Grades effectively prepare young people for work
+
+Pos. = 237	Variable = ALevFur	Variable label = How well A-levels/Highers effectively prepare young people for further study
+Pos. = 238	Variable = ALevWrk	Variable label = How well A-levels/Highers effectively prepare young people for work
+
+Pos. = 239	Variable = GetJbNow	Variable label = Whether easier for young people to get a job now than it was when you completed your full-time education
+
+Pos. = 262	Variable = TRFPB6U	Variable label = How serious a problem for you is congestion on motorways?
+
+Pos. = 263	Variable = TRFPB9U	Variable label = How serious a problem for you is traffic congestion in towns and cities?
+
+Pos. = 264	Variable = TrfPb10u	Variable label = How serious a problem for you is exhaust fumes from traffic in towns and cities?
+
+Pos. = 265	Variable = TrfConc1	Variable label = How concerned are you about damage to the countryside from building roads?
+
+Pos. = 266	Variable = DRIVE	Variable label = Do you yourself drive a car at all these days?
+
+Pos. = 268	Variable = CycDang	Variable label = It is too dangerous for me to cycle on the roads.
+Pos. = 269	Variable = Bikeown2	Variable label = Excluding exercise bikes, do you own or have regular use of a bicycle
+Pos. = 270	Variable = BikeRid	Variable label = Have you ridden a bicycle during the last 12 months
+Pos. = 309	Variable = TrstCS	Variable label = Do you tend to trust or tend not to trust the civil service ?: Version A, B
+Pos. = 310	Variable = Tstparl	Variable label = Do you tend to trust or tend not to trust the UK parliament?: Version A, B
+Pos. = 311	Variable = Tstgov	Variable label = Do you tend to trust or tend not to trust the Government?: Version A, B
+Pos. = 312	Variable = Trstmed	Variable label = Do you tend to trust or tend not to trust the media?: Version A, B
+Pos. = 313	Variable = Trststat	Variable label = Do you tend to trust or tend not to trust the ONS?: Version A, B
+Pos. = 314	Variable = Trstct	Variable label = Do you tend to trust or tend not to trust the courts?: Version A, B
+Pos. = 315	Variable = Trstpol	Variable label = Do you tend to trust or tend not to trust the police?: Version A, B
+Pos. = 316	Variable = TrstBoE	Variable label = Do you tend to trust or tend not to trust the Bank of England?: Version A, B
+Pos. = 317	Variable = Trstbank	Variable label = Do you tend to trust or tend not to trust high street banks and financial institutions?: Version A, B
+Pos. = 318	Variable = TrstONS	Variable label = How much trust do you have in statistics produced by ONS? Version A, B
+Pos. = 358	Variable = GDPchang	Variable label = GDP: Changes over time in the statistics accurately reflect what is changing in the UK?: Version A, B
+Pos. = 359	Variable = GDPpoli	Variable label = GDP: It is free from political interference?: Version A, B
+Pos. = 363	Variable = Crichang	Variable label = Crime statistics: Changes over time in the statistics accurately reflect what is changing in the UK?: Version A, B
+Pos. = 364	Variable = Cripoli	Variable label = Crime statistics: It is free from political interference?: Version A, B
+Pos. = 365	Variable = StatImp	Variable label = Statistics produced by ONS are important to understand our country?: Version A, B
+Pos. = 366	Variable = StatPI	Variable label = Statistics produced by ONS are free from political interference?: Version A, B
+Pos. = 367	Variable = StatAcc	Variable label = Official figures are generally accurate?: Version A, B
+Pos. = 368	Variable = StatHon	Variable label = Government presents official figures honestly when talking about its policies?: Version A, B
+
+Pos. = 369	Variable = StatNews	Variable label = How strongly do you agree or disagree that newspapers present official figures honestly?: Version A, B
+Pos. = 374	Variable = StatsEU	Variable label = Use of official statistics during the 2016 EU referendum campaign affect your trust in official statistics?: Version A, B
+Pos. = 389	Variable = ImprPHl	Variable label = Physical health. Do you feel you can do anything to improve this situation?
+Pos. = 390	Variable = ImprMHl	Variable label = Mental health. Do you feel you can do anything to improve this situation?
+Pos. = 391	Variable = ImprHou	Variable label = Housing or your home. Do you feel you can do anything to improve this situation?
+Pos. = 392	Variable = ImprWrk	Variable label = Work or finding a job. Do you feel you can do anything to improve this situation?
+Pos. = 393	Variable = ImprDbt	Variable label = Money or debt. Do you feel you can do anything to improve this situation?
+Pos. = 394	Variable = ImprRels	Variable label = Family or partner. Do you feel you can do anything to improve this situation?
+Pos. = 395	Variable = ImprFri	Variable label = Friend(s). Do you feel you can do anything to improve this situation?
+Pos. = 396	Variable = ImprCare	Variable label = Caring for your family, or another person. Do you feel you can do anything to improve this situation?
+Pos. = 397	Variable = ImprEdn	Variable label = Education, for yourself or your family. Do you feel you can do anything to improve this situation?
+Pos. = 398	Variable = ImprImm	Variable label = Immigration. Do you feel you can do anything to improve this situation?
+Pos. = 399	Variable = ImprCri	Variable label = Crime in your local area. Do you feel you can do anything to improve this situation?
+Pos. = 403	Variable = Tranneed	Variable label = Transgender people have gone through this process because of a very superficial and temporary need: Version C
+Pos. = 404	Variable = Prejtran	Variable label = Self-reported prejudice against people who are transgender : Version C
+Pos. = 405	Variable = TWomToil	Variable label = How comfortable or uncomfortable for a transgender woman to use female public toilets? : Version C
+Pos. = 406	Variable = TManToil	Variable label = How comfortable or uncomfortable for a transgender man to use male public toilets? : Version C
+Pos. = 407	Variable = TWomRefu	Variable label = How comfortable or uncomfortable for a transgender woman to use a refuge for women? : Version C
+Pos. = 408	Variable = TBirCert	Variable label = Transgender should be able to have the sex on their birth certificate changed if they want to?: Version C
+Pos. = 409	Variable = FraudTV	Variable label = TV programmes, newspaper or online articles about benefit fraud do you remember seeing in the last 6 months?
+Pos. = 410	Variable = FraudSnt	Variable label = Is the media critical or sympathetic in the way it portrays people people who engage in benefit fraud?
+Pos. = 411	Variable = PMS	Variable label = If a man and woman have sexual relations before marriage, what would your general opinion be? Version C
+Pos. = 412	Variable = HomoSex	Variable label = What about sexual relations between two adults of the same sex? What would your general opinion be? Version C
+Pos. = 413	Variable = DPrjDown	Variable label = How much prejudice do you think there is in Britain against people with learning disabilities?
+Pos. = 414	Variable = EuPainSh	Variable label = Shld law allow doctor to end life? Version B, C
+Pos. = 415	Variable = EuRelSh	Variable label = Shd law allow relative to end life? Version B, C
+Pos. = 416	Variable = EuNDiSh2	Variable label = Let GP ppl in pain2end their life? Version B, C
+Pos. = 417	Variable = EuDepSh	Variable label = Let doctor end life total dependnt? Version B, C
+Pos. = 418	Variable = AbTell	Variable label = Is it easy to tell if 10yr child is being abused or neglected?
+Pos. = 509	Variable = NoTUcon	Variable label = Without trade unions do you think the working condition would be better or worse than now?: Version B, C
+Pos. = 649	Variable = scobeylw	Variable label = Should people obey the law without exception?: Version A, C
+Pos. = 650	Variable = protest1	Variable label = Should organising public meetings to protest against the government be allowed?: Version A, C
+Pos. = 651	Variable = protest3	Variable label = Should organising protest marches and demonstrations be allowed?: Version A, C
+Pos. = 652	Variable = revmeet	Variable label = Should people who want to overthrow the gov't by revolution be allowed to hold public meetings?: Version A, C
+Pos. = 653	Variable = revpub	Variable label = Should people who want to overthrow the gov't by revolution be allowed to publish books?: Version A, C
+Pos. = 654	Variable = justice	Variable label = Which is worse, to convict an innocent person or to let a guilty person go free?: Version A, C
+Pos. = 655	Variable = govecon3	Variable label = Cuts in government spending?: Version A, C
+Pos. = 656	Variable = govecon4	Variable label = Government financing of projects to create new jobs?: Version A, C
+Pos. = 657	Variable = govecon5	Variable label = Are you in favour of or against less government regulation of business?: Version A, C
+Pos. = 658	Variable = govecon6	Variable label = Government support for industry to develop new products and technology?: Version A, C
+Pos. = 659	Variable = govecon7	Variable label = Government support for declining industries to protect jobs?: Version A, C
+Pos. = 660	Variable = govecon8	Variable label = Government reducing the working week to create jobs?: Version A, C
+Pos. = 661	Variable = gvspend1	Variable label = Government spending on the environment?: Version A, C
+Pos. = 662	Variable = gvspend2	Variable label = Government spending on health?: Version A, C
+Pos. = 663	Variable = gvspend3	Variable label = Government spending on the police and law enforcement?: Version A, C
+Pos. = 664	Variable = gvspend4	Variable label = Government spending on education?: Version A, C
+Pos. = 665	Variable = gvspend5	Variable label = Government spending on the military and defence?: Version A, C
+Pos. = 666	Variable = gvspend6	Variable label = Government spending on old age pensions?: Version A, C
+Pos. = 667	Variable = gvspend7	Variable label = Government spending on unemployment benefit?: Version A, C
+Pos. = 668	Variable = gvspend8	Variable label = Government spending on culture and the arts?: Version A, C
+Pos. = 669	Variable = govresp1	Variable label = Government responsibility to provide a job for everyone who wants one: Version A, C
+Pos. = 670	Variable = govresp2	Variable label = Government responsibility to keep prices under control: Version A, C
+Pos. = 671	Variable = govresp3	Variable label = Government responsibility to provide health care for the sick: Version A, C
+Pos. = 672	Variable = govresp4	Variable label = Government responsibility to provide a decent standard of living for the old: Version A, C
+Pos. = 673	Variable = govresp5	Variable label = Government responsibility to provide industry with the help it needs to grow: Version A, C
+Pos. = 674	Variable = govresp6	Variable label = Government responsibility to provide a decent standard of living for the unemployed: Version A, C
+Pos. = 675	Variable = govresp7	Variable label = Government responsibility to reduce income differences between the rich and the poor: Version A, C
+Pos. = 676	Variable = govresp8	Variable label = Government responsibility to give financial help to students from low-income families: Version A, C
+Pos. = 677	Variable = govresp9	Variable label = Government responsibility to provide decent housing for those who cant afford it: Version A, C
+Pos. = 678	Variable = govresp0	Variable label = Government responsibility to impose laws for industry do less damage to the environment: Version A, C
+Pos. = 679	Variable = govres12	Variable label = Government responsibility to promote equality between men and women: Version A, C
+Pos. = 686	Variable = surveil	Variable label = British government should have the right to keep people under surveillance in public areas: Version A, C
+Pos. = 687	Variable = moneml	Variable label = British government should have the right to monitor e-mails and other information on the internet: Version A, C
+Pos. = 688	Variable = infosec	Variable label = Scale: 0-10 public security should be given priority, even if means limiting access to gov't info: Version A, C
+Pos. = 689	Variable = infogb	Variable label = British government should collect information about anyone living in Britain: Version A, C
+Pos. = 690	Variable = infoa
+Pos. = 691	Variable = tergdetn	Variable label = Right to detain people for as long as they want without putting them on trial?: Version A, Cbr	Variable label = British government should collect information about anyone living in other countries: Version A, C
+Pos. = 692	Variable = tergtap	Variable label = Right to tap people's telephone conversations?: Version A, C
+Pos. = 693	Variable = tergsns	Variable label = Right to stop and search people in the street at random?: Version A, C
+Pos. = 694	Variable = polinrst	Variable label = How interested would you say you personally are in politics?: Version A, C
+Pos. = 695	Variable = govnosa2	Variable label = People like me dont have any say about what the government does : Version A, C
+Pos. = 696	Variable = ustndpol	Variable label = Pretty good understanding of the important political issues facing our country: Version A, C
+Pos. = 697	Variable = mppromis	Variable label = People we elect as MPs try to keep the promises they have made during the election: Version A, C
+Pos. = 698	Variable = cstrust2	Variable label = Most civil servants can be trusted to do what is best for the country: Version A, C
+Pos. = 699	Variable = taxhisc	Variable label = For those with high incomes, taxes are..: Version A, C
+Pos. = 700	Variable = taxmidsc	Variable label = For those with middle incomes, taxes are.. : Version A, C
+Pos. = 701	Variable = taxlowsc	Variable label = For those with low incomes, taxes are... : Version A, C
+Pos. = 702	Variable = tampay	Variable label = How often do the tax authorities in Britain make sure people pay their taxes?: Version A, C
+Pos. = 703	Variable = tatreat	Variable label = How often do the tax authorities in Britain treat everyone in accordance with the law?: Version A, C
+Pos. = 704	Variable = privclaw	Variable label = How often do major private companies in Britain comply with laws and regulations?: Version A, C
+Pos. = 705	Variable = privcavd	Variable label = How often do major private companies in Britain try to avoid paying their taxes?: Version A, C
+Pos. = 706	Variable = crptpol	Variable label = In your opinion, about how many politicians in Britain are involved in corruption: Version A, C
+Pos. = 707	Variable = crptciv	Variable label = In your opinion, about how many public officials in Britain are involved in corruption?: Version A, C
+Pos. = 708	Variable = crpbrib	Variable label = Public official who hinted they wanted, or asked for, a bribe or favour in return for a service?: Version A, C
+Pos. = 709	Variable = gvokhlth	Variable label = How successful is government in providing health care for the sick?: Version A, C
+Pos. = 710	Variable = gvokold	Variable label = How successful is government in providing a decent standard of living for the old?: Version A, C
+Pos. = 711	Variable = gvoksec	Variable label = How successful is government in dealing with threats to Britain's security?: Version A, C
+Pos. = 712	Variable = falsconf	Variable label = A lot of false benefit claims are a result of confusion rather than dishonesty
+Pos. = 713	Variable = cheatpor	Variable label = The reason that some people on benefit cheat the system is that they don't get enough to live on
+Pos. = 715	Variable = ben500	Variable label = An unemployed person on benefit takes a casual job paid in cash. Is this wrong?: Version A, B
+Pos. = 716	Variable = ben500do	Variable label = And how likely that you would take a casual job and not report £500 to benefit office?: Version A, B
+Pos. = 717	Variable = ben3000	Variable label = An unemployed person on benefit takes a casual job paid in cash. Is this wrong?: Version C
+Pos. = 718	Variable = ben3000d	Variable label = And how likely that you would take a casual job and not report £3000 to benefit office?: Version C
+Pos. = 719	Variable = pay500	Variable label = A person in paid work takes on an extra weekend job and is paid in casht. Is this wrong?: Version A, B
+Pos. = 720	Variable = pay500do	Variable label = And how likely that you would take on an extra weekend job and not declare £500 for tax?: Version A, B
+Pos. = 721	Variable = repfrau1	Variable label = How likely that you would report someone you know who falsely claimed £500 of benefits. : Version A, B
+Pos. = 722	Variable = pay3000	Variable label = A person in paid work takes on an extra weekend job and is paid in cash. Is this wrong?: Version C
+Pos. = 723	Variable = pay3000d	Variable label = And how likely that you would take on an extra weekend job and not declare £3000 for tax?: Version C
+Pos. = 724	Variable = repfrau2	Variable label = How likely that you would report someone you know who falsely claimed £3000 of benefits.: Version C
+Pos. = 725	Variable = falcatch	Variable label = How likely is it that someone who falsely claims benefits would be caught
+Pos. = 728	Variable = hsarea1	Variable label = GP appointment systems are satisfactory?: Version C
+Pos. = 729	Variable = hsarea3	Variable label = Being able to choose which GP to see is satisfactory?: Version C
+Pos. = 730	Variable = schlcon3	Variable label = How much confidence in the school system in Britain
+Pos. = 731	Variable = statsc1b	Variable label = Secondary schools nowadays prepare young people for work?
+Pos. = 732	Variable = statsc2b	Variable label = Secondary schools nowadays teach young people basic skills such as reading, writing and maths?
+Pos. = 733	Variable = statsc3b	Variable label = Secondary schools nowadays bring out young peoples natural abilities?
+Pos. = 734	Variable = statsc4b	Variable label = Secondary schools nowadays support every young person, regardless of background, to achieve their potential?
+Pos. = 735	Variable = respsch	Variable label = How much responsibility do you think schools should have for the personal and social development of children?
+Pos. = 736	Variable = quldev3b	Variable label = Schools should develop skills+knowledge for good job?
+Pos. = 737	Variable = quldev4b	Variable label = Schools should develop qualifications, certificates?
+Pos. = 738	Variable = quldev9b	Variable label = Schools should develop skills+knowledge for science/technology career?
+Pos. = 739	Variable = quldv10b	Variable label = Schools should develop personal qualities like character/resilience?
+Pos. = 740	Variable = quldv11b	Variable label = Schools should develop extra-curricular activities like music, arts, sports?
+Pos. = 741	Variable = quldv12b	Variable label = Schools should develop understanding of diff jobs, careers, steps after education?
+Pos. = 742	Variable = quldv13b	Variable label = Schools should develop knowledge of key issues about sex, relationships?
+Pos. = 743	Variable = respjour	Variable label = Do you respect Journalists
+Pos. = 744	Variable = respaf	Variable label = Do you respect The Armed Forces
+Pos. = 745	Variable = respdoct	Variable label = Do you respect Doctors
+Pos. = 747	Variable = resplaw	Variable label = Do you respect Lawyers
+Pos. = 748	Variable = respteac	Variable label = Do you respect Teachers
+Pos. = 749	Variable = respsocw	Variable label = Do you respect Social workers
+Pos. = 750	Variable = carwalk2	Variable label = Many of the short journeys that I now make by car I could just as easily walk
+Pos. = 751	Variable = carbus2	Variable label = Many of the short journeys that I now make by car I could just as easily go by bus
+Pos. = 752	Variable = carbike2	Variable label = Many of the short journeys that I now make by car I could just as easily cycle
+Pos. = 754	Variable = plnallow	Variable label = People should be able to travel by plane as much as they like
+Pos. = 755	Variable = plnterm	Variable label = Should travel by plane as much as like, even if new runways needed
+Pos. = 756	Variable = plnenvt	Variable label = Should travel by plane as much as like, even if harms environment
+Pos. = 757	Variable = plnuppri	Variable label = The price of a plane ticket should reflect environmental damage caused
+Pos. = 758	Variable = cartaxhi	Variable label = For the sake of the environment, car users should pay higher taxes
+Pos. = 759	Variable = carallow	Variable label = Should be allowed to use their cars as much as they like, even at cost to environment
+Pos. = 760	Variable = carreduc	Variable label = For the environment everyone should reduce how much they use cars
+Pos. = 761	Variable = carnod2	Variable label = No point in reducing my car use to help the environment unless others do
+Pos. = 762	Variable = carenvdc	Variable label = People who drive cars that are better for the environment should pay less to use roads
+Pos. = 763	Variable = resclose	Variable label = Closing residential streets to through traffic
+Pos. = 764	Variable = res20mph	Variable label = Having speed limits of 20 miles per hour in residential streets
+Pos. = 765	Variable = resbumps	Variable label = Having speed bumps to slow down traffic in residential streets: Version C
+Pos. = 766	Variable = ddnodrv	Variable label = If someone has drunk any alcohol they should not drive
+Pos. = 767	Variable = ddnklmt	Variable label = Most dont know how much alcohol they can drink before being over limit
+Pos. = 768	Variable = specamsl	Variable label = Speed cameras save lives
+Pos. = 769	Variable = specammo	Variable label = Speed cameras are mostly there to make money
+Pos. = 770	Variable = specamtm	Variable label = There are too many speed cameras
+Pos. = 771	Variable = speedlim	Variable label = People should drive within the speed limit
+Pos. = 772	Variable = speavesc	Variable label = Average speed cameras are preferable to fixed speed cameras
+Pos. = 773	Variable = mobdsafe	Variable label = It is perfectly safe to talk on a hand-hand mobile phone while driving
+Pos. = 774	Variable = mobddang	Variable label = All use of mobile phones while driving, inc hands-free is dangerous
+Pos. = 775	Variable = mobdban	Variable label = All use of mobile phones while driving, inc hands-free should be banned
+Pos. = 776	Variable = mobdlaw	Variable label = The law on using mobile phones whilst driving is not properly enforced
+Pos. = 785	Variable = trapolic	Variable label = Suitably qualified people who are transgender should be employed as police officers?
+Pos. = 786	Variable = traprims	Variable label = Suitably qualified people who are transgender should be employed as primary school teachers?
+Pos. = 788	Variable = abort1	Variable label = Law should allow abortion if The woman decides on her own she does not wish to have a child: Version B, C
+Pos. = 789	Variable = abort4	Variable label = Law should allow abortion if The couple cannot afford any more children : Version B, C
+Pos. = 790	Variable = abort6	Variable label = Law should allow abortion if The woman's health is seriously endangered by the pregnancy : Version B, C
+Pos. = 791	Variable = exit1	Variable label = Painful incurable disease doctors should be allowed to end the patient's life if they request it? : Version B, C
+Pos. = 794	Variable = teenwatc	Variable label = Agree/ disagree: you shouldnt try to stop teenage boys watching porn, just part of growing up. : Version B, C
+Pos. = 795	Variable = welfhelp	Variable label = The welfare state encourages people to stop helping each other
+Pos. = 796	Variable = morewelf	Variable label = The government should spend more money on welfare benefits for the poor
+Pos. = 797	Variable = unempjob	Variable label = Around here, most unemployed people could find a job if they really wanted one
+Pos. = 798	Variable = sochelp	Variable label = Many people who get social security dont really deserve any help
+Pos. = 799	Variable = dolefidl	Variable label = Most people on the dole are fiddling in one way or another
+Pos. = 800	Variable = welffeet	Variable label = If welfare benefits werent so generous, people would learn to stand on own feet
+Pos. = 801	Variable = damlives	Variable label = Cutting benefits would damage too many peoples lives
+Pos. = 802	Variable = proudwlf	Variable label = The creation of the welfare state is one of Britains proudest achievements
+Pos. = 803	Variable = redistrb	Variable label = Government should redistribute income from the better-off to less well-off
+Pos. = 804	Variable = BigBusnn	Variable label = Big business benefits owners at the expense of workers
+Pos. = 805	Variable = wealth	Variable label = Ordinary working people do not get their fair share of the nation's wealth
+Pos. = 806	Variable = richlaw	Variable label = There is one law for the rich and one for the poor
+Pos. = 807	Variable = indust4	Variable label = Management will always try to get the better of employees if it gets the chance
+Pos. = 808	Variable = tradvals	Variable label = Young people today don't have enough respect for traditional British values
+Pos. = 809	Variable = stifsent	Variable label = People who break the law should be given stiffer sentences
+Pos. = 810	Variable = deathapp	Variable label = For some crimes, the death penalty is the most appropriate sentence
+Pos. = 811	Variable = obey	Variable label = Schools should teach children to obey authority
+Pos. = 812	Variable = wronglaw	Variable label = The law should always be obeyed, even if a particular law is wrong
+Pos. = 813	Variable = censor	Variable label = Censorship of films and magazines is necessary to uphold moral standards
+
+Let's select the items 
+
+```{r}
+item_posns <- c(
+  149, 150, 152:154, 165:7,182, 183, 185, 191, 217, 218, 223:224, 239:239, 262:266,
+  268:270, 309:318, 358:359,
+  363:369, 374, 389:399, 403:418, 509, 649:679, 689:725, 728:813
+)
+
+make_binary <- function(x){
+  
+  x %>% 
+    as.numeric() %>% 
+    as.character() %>% 
+    dplyr::recode(
+      `3` = 1L,
+      `4` = 1L,
+      `5` = 0L,
+      `6` = 0L,
+      `7` = 0L,
+      .default = NA_integer_
+    ) -> out
+  out
+}
+
+dta_items <- dta_fctr[,item_posns]
+
+dta_items <- map_dfr(dta_items, make_binary)
+```
+
+Now visualise correlation 
+
+
+```{r}
+r <- cor(dta_items,  use = "pairwise.complete.obs")
+#corrplot::corrplot(r)
+image(r)
+```
+
+Doesn't really work. PCA?
+
+```{r}
+
+K <- dim(dta_items)[2]
+
+excludes <- c()
+
+for (k in 2:K){
+  pc <- try(prcomp(na.omit(dta_items[,c(1, k)])))
+  if (class(pc) == "try-error"){
+    excludes <- c(excludes, k)
+  }
+}
+includes <- setdiff(1:K, excludes)
+
+pc <- prcomp(na.omit(dta_items[,includes]))
+
+
+```
